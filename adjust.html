@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+</head>
+<body>
+<h3 id=".init">.init()</h3>
+
+<p>Adjust must be initialized.
+<code>js
+Adjust.init();
+</code></p>
+
+<h3 id="adjust.trackelementsclassname">Adjust.trackElements(&#8216;CLASSNAME&#8217;);</h3>
+
+<p>Transform div to spaceposition: <a href="example/example3.html">view demo</a></p>
+
+<pre><code class="js">Adjust.trackElements('point');
+</code></pre>
+
+<p><strong>Data Attritbutes are required!</strong>
+<code>html
+&lt;div class=&quot;point&quot; data-x=&quot;45&quot; data-y=&quot;150&quot; data-z=&quot;-500&quot;&gt;
+    &lt;!--Your content--&gt;
+&lt;/div&gt;
+</code></p>
+
+<pre><code class="css">.point{
+    top: 0;
+    left: 0;
+    z-index: 1;
+    transform-origin: 0 0;
+    display: inline-block;
+    position: absolute;
+}
+</code></pre>
+
+<h1 id="adjust.untrackelements">Adjust.untrackElements();</h1>
+
+<p>Untrack all Elements! Not labels</p>
+
+<h1 id="adjust.addactiveobjectelementmouseovermouseleavemousedowndraggable">Adjust.addActiveObject(element,mouseover,mouseleave,mousedown,draggable);</h1>
+
+<pre><code>__element__
+__mouseover__
+__mouseleave__
+__mousedown__
+__draggable__
+</code></pre>
+
+<h1 id=".checkpointinradiusorigintargetradius">.checkPointInRadius(origin,target,radius)</h1>
+
+<pre><code>return Array [boolean , distance ]
+</code></pre>
+
+<p>origin - object - {x:0,y:0,z:0}
+target - object - {x:0,y:0,z:0}
+radius - number - 10</p>
+
+<h1 id=".resize">.resize();</h1>
+
+<h1 id=".updatecamera">.update(camera);</h1>
+
+</body>
+</html>
