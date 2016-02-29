@@ -6,7 +6,7 @@ init({
 });
 
 
-Adjust.init();
+Adjust.init(camera);
 
 
 var material = new THREE.LineBasicMaterial({
@@ -31,7 +31,7 @@ scene.add( line );
 
  
 
-Adjust.trackElements('point');
+Adjust.addPoints('point');
 function animation(time){
   camera.position.x = Math.sin(0.0005 *time) * 1500;
   camera.position.z = Math.cos(0.0005 *time) * 1500;

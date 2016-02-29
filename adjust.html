@@ -4,26 +4,102 @@
 	<meta charset="utf-8"/>
 </head>
 <body>
-<h3 id=".init">.init()</h3>
+<h2 id="adjust.js">Adjust.js</h2>
 
-<p>Adjust must be initialized.
-<code>js
-Adjust.init();
+<ul>
+<li><a href="#user-content-init">init()</a></li>
+<li><a href="#user-content-addlabel">addLabel()</a></li>
+<li><a href="#user-content-trackelements">trackElements()</a></li>
+<li><a href="#user-content-untrackelements">untrackElements()</a></li>
+<li><a href="#user-content-addactiveobject">addActiveObject()</a></li>
+</ul>
+
+<h3 id="installation">Installation</h3>
+
+<p>Load the Library.
+<code>html
+&lt;script src=&quot;adjust.min.js&quot;&gt;&lt;/script&gt;
 </code></p>
 
-<h3 id="adjust.trackelementsclassname">Adjust.trackElements(&#8216;CLASSNAME&#8217;);</h3>
+<h3 id=".init">.init()</h3>
 
-<p>Transform div to spaceposition: <a href="example/example3.html">view demo</a></p>
+<p>Init Adjust with a threejs camera as argument.
+<code>js
+Adjust.init(camera);
+</code></p>
+
+<h3 id=".resize">.resize();</h3>
+
+<p>Resize Adjust
+<code>js
+window.onresize = function(){
+    Adjust.resize();
+}
+</code></p>
+
+<h3 id=".updatecamera">.update(camera);</h3>
+
+<p>Update Adjust on each frame</p>
+
+<pre><code class="js">function render(t) { 
+  Adjust.update();
+  
+  renderer.render(scene, camera);
+  requestAnimationFrame( render );
+};
+
+</code></pre>
+
+<h1 id="methods">Methods</h1>
+
+<hr />
+
+<h3 id=".addlabel">.addLabel();</h3>
+
+<p>Add a label to a threejs Mesh. Label has a data-Attribute data-bound=&#8220;bool&#8221;. Attribute is <strong>true</strong> if in Frustum, <strong>false</strong> if not.
+<a href="example/example4.html">view demo</a></p>
+
+<h5 id="html">html</h5>
+
+<pre><code class="html">&lt;div class=&quot;label&quot; data-label=&quot;box&quot;&gt;
+    &lt;!--Your content--&gt;
+&lt;/div&gt;
+</code></pre>
+
+<h5 id="js-threejs">js - threejs</h5>
+
+<pre><code class="js">var boxGeometry = new THREE.BoxGeometry(10,10,10);
+var boxMaterial = new THREE.MeshBasicMaterial(0xcccccc);
+var box = new THREE.Mesh(boxGeometry,boxMaterial);
+
+    box.name = &quot;box&quot;; // same name as data-label
+    scene.add(box);
+
+    // Init Labels by Classname
+    Adjust.addLabel('label');
+</code></pre>
+
+<hr />
+
+<h3 id=".addpoints">.addPoints()</h3>
+
+<p>Place div in Space: <a href="example/example3.html">view demo</a></p>
+
+<p><strong>Data Attritbutes are required!</strong></p>
+
+<h5 id="html">html</h5>
+
+<pre><code class="html">&lt;div class=&quot;point&quot; data-x=&quot;45&quot; data-y=&quot;150&quot; data-z=&quot;-500&quot;&gt;
+    &lt;!--Your content--&gt;
+&lt;/div&gt;
+</code></pre>
+
+<h5 id="js">js</h5>
 
 <pre><code class="js">Adjust.trackElements('point');
 </code></pre>
 
-<p><strong>Data Attritbutes are required!</strong>
-<code>html
-&lt;div class=&quot;point&quot; data-x=&quot;45&quot; data-y=&quot;150&quot; data-z=&quot;-500&quot;&gt;
-    &lt;!--Your content--&gt;
-&lt;/div&gt;
-</code></p>
+<h5 id="css">css</h5>
 
 <pre><code class="css">.point{
     top: 0;
@@ -35,20 +111,98 @@ Adjust.init();
 }
 </code></pre>
 
-<h1 id="adjust.untrackelements">Adjust.untrackElements();</h1>
+<hr />
+
+<h3 id=".removepoints">.removePoints();</h3>
 
 <p>Untrack all Elements! Not labels</p>
 
-<h1 id="adjust.addactiveobjectelementmouseovermouseleavemousedowndraggable">Adjust.addActiveObject(element,mouseover,mouseleave,mousedown,draggable);</h1>
+<hr />
 
-<pre><code>__element__
-__mouseover__
-__mouseleave__
-__mousedown__
-__draggable__
+<h3 id=".addactiveobject">.addActiveObject()</h3>
+
+<p><a href="example/example2.html">view demo</a></p>
+
+<table>
+<colgroup>
+<col style="text-align:left;"/>
+<col style="text-align:left;"/>
+</colgroup>
+
+<thead>
+<tr>
+	<th style="text-align:left;">argument</th>
+	<th style="text-align:left;">type</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+	<td style="text-align:left;">element</td>
+	<td style="text-align:left;">mesh</td>
+</tr>
+<tr>
+	<td style="text-align:left;">mouseover</td>
+	<td style="text-align:left;">function(activeObject)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">mouseleave</td>
+	<td style="text-align:left;">function(activeObject)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">mousedown</td>
+	<td style="text-align:left;">function(activeObject)</td>
+</tr>
+<tr>
+	<td style="text-align:left;">draggable</td>
+	<td style="text-align:left;">bool</td>
+</tr>
+</tbody>
+</table>
+
+<pre><code class="js">
+// Box
+var boxGeometry = new THREE.BoxGeometry(10,10,10);
+var boxMaterial = new THREE.MeshBasicMaterial(0xcccccc);
+var box = new THREE.Mesh(boxGeometry,boxMaterial);
+
+    box.name = &quot;box&quot;; // same name as data-label
+    scene.add(box);
+
+// States
+
+//Mouseover Function
+function over (el){
+  el.material.color = new THREE.Color(0x000000);
+}
+//Mouseout Function
+function out (el){
+  el.material.color = new THREE.Color(0xffffff);
+}
+//Mousedown Function
+function activeState (el){
+    el.material.color = new THREE.Color(0xff0000);
+}
+
+//Add Object to activeObjects
+Adjust.addActiveObject(box,over,out,activeState,false);
 </code></pre>
 
-<h1 id=".checkpointinradiusorigintargetradius">.checkPointInRadius(origin,target,radius)</h1>
+<h2 id="helpermethods">Helper Methods</h2>
+
+<h4 id=".distancetocameravector3">.distanceToCamera(vector3)</h4>
+
+<p>returns distance to Camera</p>
+
+<h4 id=".objinfrustumobj">.objInFrustum(obj)</h4>
+
+<p>returns bool</p>
+
+<h4 id=".pointinfrustumvector3">.pointInFrustum(vector3)</h4>
+
+<p>returns bool</p>
+
+<h4 id=".checkpointinradiusorigintargetradius">.checkPointInRadius(origin,target,radius)</h4>
 
 <pre><code>return Array [boolean , distance ]
 </code></pre>
@@ -56,10 +210,6 @@ __draggable__
 <p>origin - object - {x:0,y:0,z:0}
 target - object - {x:0,y:0,z:0}
 radius - number - 10</p>
-
-<h1 id=".resize">.resize();</h1>
-
-<h1 id=".updatecamera">.update(camera);</h1>
 
 </body>
 </html>

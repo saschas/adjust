@@ -28,6 +28,10 @@ canvas{
 	position:absolute;
 }
 
+div[data-bound="false"]{
+	display:none;
+}
+
 .point,.adjustLabel,.label,.vertex,.note{
     position: absolute;
     top: 0;

@@ -18,8 +18,8 @@ var Adjust = {
   labels : []
 }
 
-Adjust.init = function(){
-
+Adjust.init = function(camera){
+  this.camera = camera;
   this.bindEvents();
   this.resize();
   this.plane = new THREE.Mesh(
@@ -44,7 +44,7 @@ num *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
 }
 
 
-Adjust.trackElements = function (elements){
+Adjust.addPoints = function (elements){
   if(typeof this.elements == 'object'){
     var additionalElements = document.getElementsByClassName(elements);
     var moreObjects = [];
@@ -70,7 +70,7 @@ Adjust.trackElements = function (elements){
   }
 }
 
-Adjust.untrackElements = function (){
+Adjust.removePoints = function (){
   this.domElementsBool = false;
 
   for(var p=0;p< this.elements.length;p++){
@@ -99,9 +99,10 @@ Adjust.addLabel = function (className) {
   }
 }
 
-Adjust.updateSingleLabel = function(domElement,camera){
+Adjust.updateSingleLabel = function(domElement){
 var offsetX = 0;
 var offsetY = 0;
+var offsetZ = 0;
 
   if(typeof domElement.dataset.offsetx != 'undefined'){
     offsetX = domElement.dataset.offsetx;
@@ -109,17 +110,22 @@ var offsetY = 0;
   if(typeof domElement.dataset.offsety != 'undefined'){
     offsetY = domElement.dataset.offsety;
   }
+  if(typeof domElement.dataset.offsetz != 'undefined'){
+    offsetZ = domElement.dataset.offsetz;
+  }
   var vector = new THREE.Vector3();
   var p = {
     x : parseFloat(domElement._dirtyCustom.position.x) - offsetX,
     y : parseFloat(domElement._dirtyCustom.position.y) - offsetY,
-    z : parseFloat(domElement._dirtyCustom.position.z),
+    z : parseFloat(domElement._dirtyCustom.position.z) - offsetZ,
   }
   vector.set(p.x,p.y,p.z);
 
-  this.convertVector(vector,camera);
+    domElement.dataset.bound = this.pointInFrustum(vector);
+    this.convertVector(vector);
 
-  this.domElement(domElement,vector);
+    this.domElement(domElement,vector);
+
   return vector;
 }
 
@@ -150,8 +156,8 @@ Adjust.domElement = function (domElement,vector,bound){
   }
 }
 
-Adjust.convertVector = function (v,c){
-	v.project(c);
+Adjust.convertVector = function (v){
+	v.project(this.camera);
 	v.x = ( v.x * this.half.width) + this.half.width;
 	v.y = - ( v.y * this.half.height ) + this.half.height;
 	v.z = ( v.z * (this.half.width/this.half.height) / 2) + (this.half.width / this.half.height) * 2;//(((v.x - c.position.x) * (v.x - c.position.x)) + ((v.y - c.position.y) * (v.y - c.position.y)) + ((v.z - c.position.z) * (v.z - c.position.z))) / ((this.width / this.height) * 2) / 1000000 ;
@@ -159,7 +165,7 @@ Adjust.convertVector = function (v,c){
 	return v;
 }
 
-Adjust.element = function (domElement,camera){
+Adjust.element = function (domElement){
   var vector = new THREE.Vector3();
 
   if(typeof this.width == "undefined"){
@@ -175,8 +181,8 @@ Adjust.element = function (domElement,camera){
     z : parseFloat(domElement.dataset.z),
   }
   vector.set(p.x,p.y,p.z);
-
-  this.convertVector(vector,camera);
+  domElement.dataset.bound = this.pointInFrustum(vector);
+  this.convertVector(vector);
   this.domElement(domElement,vector);
   return vector;
 }
@@ -262,22 +268,22 @@ Adjust.checkPointInRadius = function(point,target, radius,cb) {
 }
 
 
-Adjust.update = function(camera){
+Adjust.update = function(){
 
   if(this.domElementsBool){
     for(var p=0;p< this.elements.length;p++){
-      this.element(this.elements[p],camera);
+      this.element(this.elements[p]);
     }
   }
 
   if(this.updateLabelsBool){
     for(var l=0;l< this.labels.length;l++){
-      this.updateSingleLabel(this.labels[l],camera);
+      this.updateSingleLabel(this.labels[l]);
     }
   }
 
   if(this.activeObjectUpdate){
-    this.checkMouseCollision(camera);
+    this.checkMouseCollision();
   }
 
 }
@@ -298,7 +304,7 @@ Adjust.addDraggable = function(obj,bool){
 }
 
 
-Adjust.checkMouseCollision = function(camera){
+Adjust.checkMouseCollision = function(){
   var vector = new THREE.Vector3();
 
   vector.set(
@@ -307,14 +313,14 @@ Adjust.checkMouseCollision = function(camera){
       0.5 );
 
 
-  this.raycaster.setFromCamera( vector, camera );
+  this.raycaster.setFromCamera( vector, this.camera );
 
    if ( this.selected !=null) {
     this.intersects = this.raycaster.intersectObject( this.plane );
 
           if ( this.intersects.length > 0 ) {
               this.plane.position.copy( this.intersected.position );
-              this.plane.lookAt( camera.position );
+              this.plane.lookAt( this.camera.position );
 
             
             if(this.intersected._draggable){
@@ -338,7 +344,7 @@ Adjust.checkMouseCollision = function(camera){
         this.intersected = this.intersects[ 0 ].object;
        
         this.plane.position.copy( this.intersected.position );
-        this.plane.lookAt( camera.position );
+        this.plane.lookAt( this.camera.position );
     }
 
     if ( this.intersected ) {
@@ -357,7 +363,42 @@ Adjust.checkMouseCollision = function(camera){
   }
 }
 
-Adjust.mouseToSpace = function(camera){
+Adjust.distanceToCamera = function(p){
+
+    var dx = p.x - this.camera.position.x;
+    var dy = p.y - this.camera.position.y;
+    var dz = p.z - this.camera.position.z;
+
+    return Math.sqrt((dx*dx)+(dy*dy)+(dz*dz));
+
+}
+
+Adjust.objInFrustum = function(obj){
+  this.camera.updateMatrix(); // make sure camera's local matrix is updated
+  this.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+  this.camera.matrixWorldInverse.getInverse( camera.matrixWorld );
+
+  obj.updateMatrix(); // make sure plane's local matrix is updated
+  obj.updateMatrixWorld(); // make sure plane's world matrix is updated
+
+  var frustum = new THREE.Frustum();
+      frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse ) );
+  
+  return frustum.intersectsObject(obj) ;
+}
+
+Adjust.pointInFrustum = function(p){
+  this.camera.updateMatrix(); // make sure camera's local matrix is updated
+  this.camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+  this.camera.matrixWorldInverse.getInverse( camera.matrixWorld );
+
+  var frustum = new THREE.Frustum();
+      frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse ) );
+
+  return frustum.containsPoint(p) ;
+}
+
+Adjust.mouseToSpace = function(){
 
   var vector = new THREE.Vector3();
 
@@ -366,13 +407,13 @@ Adjust.mouseToSpace = function(camera){
       - ( this.mouse.y / this.realHeight ) * 2 + 1,
       0.5 );
 
-  vector.unproject( camera );
+  vector.unproject( this.camera );
 
-  var dir = vector.sub( camera.position ).normalize();
+  var dir = vector.sub( this.camera.position ).normalize();
 
-  var distance = - camera.position.y / dir.y;
+  var distance = - this.camera.position.y / dir.y;
 
-  var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
+  var pos = this.camera.position.clone().add( dir.multiplyScalar( distance ) );
 
   return pos;
 }

@@ -8,7 +8,7 @@ init({
 // INIT Adjust
 
 
-Adjust.init();
+Adjust.init(camera);
 
 
 function over (el){
@@ -67,7 +67,8 @@ for ( var i = 0; i < 81; i ++ ) {
 // A new Mesh with the same geometry and material
     Labels[i] = new THREE.Mesh( new THREE.BoxGeometry(55,Adjust.randNum(130,190,false),55) , new THREE.MeshPhongMaterial(0xffffff) );
   // with a random position
-    
+    Labels[i].castShadow = true;
+    Labels[i].receiveShadow = true;
     Labels[i]._origin = {
       x : -800 + (row * 200),
       y : 0,

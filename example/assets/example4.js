@@ -9,7 +9,7 @@ init({
 // INIT Adjust
 
 
-Adjust.init();
+Adjust.init(camera);
 
 
 
@@ -18,7 +18,6 @@ function createLabel(name,pos){
   var el = document.createElement('div');
       
       el.dataset.label = 'label-' + name;
-      //el.dataset.offsetx = 50;
       el.classList.add('label');
       el.innerHTML = 'label ' + name;
       return el;
@@ -29,8 +28,8 @@ function createLabel(name,pos){
 
 var labelBox = new THREE.SphereGeometry(45,32,32);
 var Labels = [];
-var holder = document.createElement('div');
-    holder.classList.add('holder');
+var labelHolder = document.createElement('div');
+    labelHolder.classList.add('labelholder');
 
 
 
@@ -51,11 +50,11 @@ for ( var i = 0; i < 50; i ++ ) {
     Labels[i].castShadow = true;
     Labels[i].receiveShadow = true;
 
-    holder.appendChild(createLabel(i,Labels[i].position));
+    labelHolder.appendChild(createLabel(i,Labels[i].position));
     
     scene.add( Labels[i]);
 }
-document.body.appendChild(holder);
+document.body.appendChild(labelHolder);
 
 
 Adjust.addLabel('label');
@@ -70,9 +69,9 @@ Adjust.addLabel('label');
 function animation(time){
 
 
-  camera.position.x = Math.sin(0.0005 *time) * 500;
-  camera.position.z = Math.cos(0.0005 *time) * 500;
-  camera.position.y = 150 + Math.max(-Math.sin(0.0005 *time) * 300,Math.sin(0.0005 *time) * 300);
+  camera.position.x = Math.sin(0.00005 *time) * 500;
+  camera.position.z = Math.cos(0.00005 *time) * 500;
+  camera.position.y = 250 + Math.max(-Math.sin(0.0005 *time) * 100,Math.sin(0.0005 *time) * 100);
 
 }
 

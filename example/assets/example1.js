@@ -9,9 +9,10 @@ init({
 
 // INIT Adjust
 
-  controls.enabled = false;
+camera.position.set(0,2000,2000);
 
-Adjust.init();
+
+Adjust.init(camera);
 
 
 
@@ -159,9 +160,9 @@ function animation(time){
   }
  
   
-  camera.position.x = controls.target.x + Math.sin(0.00005 *time) * 1500;
-  camera.position.z = controls.target.z + Math.cos(0.00005 *time) * 1500;
-  camera.position.y = controls.target.y + 1500 + Math.max(-Math.sin(0.0005 *time) * 300,Math.sin(0.0005 *time) * 300);
+  //camera.position.x = controls.target.x + Math.sin(0.00005 *time) * 1500;
+  //camera.position.z = controls.target.z + Math.cos(0.00005 *time) * 1500;
+  //camera.position.y = controls.target.y + 1500 + Math.max(-Math.sin(0.0005 *time) * 300,Math.sin(0.0005 *time) * 300);
 
 }
 

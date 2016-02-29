@@ -5,7 +5,7 @@ var size,step,screenVertex,count,render;
 
 function init(opt){
   //__________ Variables
-  main_color = 0x666666;
+  main_color = 0x333333;
   hover_color = 0x666666;
   action_color = 0xFF6347;
   time = 0;
@@ -19,7 +19,7 @@ function init(opt){
       texture_base +"py.png", texture_base +"ny.png",
       texture_base +"pz.png", texture_base +"nz.png"
     ];
-
+    
     cubemap = THREE.ImageUtils.loadTextureCube(urls); // load textures
     cubemap.format = THREE.RGBFormat;
     cubemap.premultiplyAlpha = true;
@@ -27,7 +27,7 @@ function init(opt){
 
 //__________ Scene
    scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(main_color,1000,3000);
+    scene.fog = new THREE.Fog(main_color,2000,5000);
 //__________ camera
 var fov = 50;
 if(typeof opt.fov != undefined){
@@ -66,7 +66,7 @@ switch(opt.controls){
   case 'orbit':
     controls = new THREE.OrbitControls( camera );
     controls.damping = 0.2;
-    controls.enabled = true;
+    controls.enabled = false;
     controls.maxPolarAngle = 85 * Math.PI/180; 
 
     camera.position.x = 802;
@@ -87,7 +87,7 @@ switch(opt.controls){
   default:
     controls = new THREE.OrbitControls( camera );
     controls.damping = 0.2;
-    controls.enabled = true;
+    controls.enabled = false;
     controls.maxPolarAngle = 85 * Math.PI/180; 
   break;
 }
@@ -101,7 +101,7 @@ switch(opt.controls){
     spotLight.intensity = 1;
     spotLight.castShadow = true;
     spotLight.shadow.camera.near = .1;
-    spotLight.shadow.camera.far = 3000;
+    spotLight.shadow.camera.far = 10000;
     //spotLight.shadow.bias = -.0018;
   l = 10;
     spotLight.shadow.camera.right     =  l;
@@ -155,7 +155,7 @@ switch(opt.controls){
     count++;
   screenVertex.appendChild(createPoint('vertex',index,p));
   if(count == gridHelperHorizontal.geometry.vertices.length-1){
-      Adjust.trackElements('vertex');
+      Adjust.addPoints('vertex');
     }
 
 });
@@ -171,7 +171,7 @@ render = function (time) {
     TWEEN.update(time);
   }
 
-  Adjust.update(camera);
+  Adjust.update();
   
   animation(time);
   controls.update();
@@ -217,9 +217,10 @@ init({
 
 // INIT Adjust
 
-  controls.enabled = false;
+camera.position.set(0,2000,2000);
 
-Adjust.init();
+
+Adjust.init(camera);
 
 
 
@@ -367,9 +368,9 @@ function animation(time){
   }
  
   
-  camera.position.x = controls.target.x + Math.sin(0.00005 *time) * 1500;
-  camera.position.z = controls.target.z + Math.cos(0.00005 *time) * 1500;
-  camera.position.y = controls.target.y + 1500 + Math.max(-Math.sin(0.0005 *time) * 300,Math.sin(0.0005 *time) * 300);
+  //camera.position.x = controls.target.x + Math.sin(0.00005 *time) * 1500;
+  //camera.position.z = controls.target.z + Math.cos(0.00005 *time) * 1500;
+  //camera.position.y = controls.target.y + 1500 + Math.max(-Math.sin(0.0005 *time) * 300,Math.sin(0.0005 *time) * 300);
 
 }
 
