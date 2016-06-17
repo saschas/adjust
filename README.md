@@ -104,8 +104,8 @@ Untrack all Elements! Not labels
 
 ###.addActiveObject()
 
-<a href="http://htmlpreview.github.io/?https://github.com/saschas/adjust/blob/master/examples/add_active.html">view demo</a>
-<a href="http://htmlpreview.github.io/?https://github.com/saschas/adjust/blob/master/examples/add_active_draggable.html">view draggable demo</a>
+* <a href="http://htmlpreview.github.io/?https://github.com/saschas/adjust/blob/master/examples/add_active.html">view demo</a>
+* <a href="http://htmlpreview.github.io/?https://github.com/saschas/adjust/blob/master/examples/add_active_draggable.html">view draggable demo</a>
 
 | argument | type |
 |---|---|
