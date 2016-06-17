@@ -2,8 +2,8 @@
 
 - [init()](#user-content-init)
 - [addLabel()](#user-content-addlabel)
-- [trackElements()](#user-content-trackelements)
-- [untrackElements()](#user-content-untrackelements)
+- [addPoints()](#user-content-trackelements)
+- [removePoints()](#user-content-untrackelements)
 - [addActiveObject()](#user-content-addactiveobject)
 
 ### Installation
@@ -44,7 +44,9 @@ function render(t) {
 
 ### .addLabel();
 Add a label to a threejs Mesh. Label has a data-Attribute data-bound="bool". Attribute is __true__ if in Frustum, __false__ if not.
-<a href="example/example4.html">view demo</a>
+*NOTE: Mesh must be added directly to scene. Cannot be a child of other Elements*
+
+<a href="example/add_label.html">view demo</a>
 #####html
 ```html
 <div class="label" data-label="box">
@@ -67,7 +69,7 @@ var box = new THREE.Mesh(boxGeometry,boxMaterial);
 ---
 
 ### .addPoints()
-Place div in Space: <a href="example/example3.html">view demo</a>
+Place div in Space: <a href="example/add_points.html">view demo</a>
 
 __Data Attritbutes are required!__
 #####html
@@ -79,7 +81,7 @@ __Data Attritbutes are required!__
 
 #####js
 ```js
-Adjust.trackElements('point');
+Adjust.addPoints('point');
 ```
 #####css
 ```css
@@ -102,7 +104,8 @@ Untrack all Elements! Not labels
 
 ###.addActiveObject()
 
-<a href="example/example2.html">view demo</a>
+<a href="example/add_active.html">view demo</a>
+<a href="example/add_active_draggable.html">view draggable demo</a>
 
 | argument | type |
 |---|---|
