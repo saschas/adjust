@@ -46,7 +46,7 @@ function render(t) {
 Add a label to a threejs Mesh. Label has a data-Attribute data-bound="bool". Attribute is __true__ if in Frustum, __false__ if not.
 *NOTE: Mesh must be added directly to scene. Cannot be a child of other Elements*
 
-<a href="example/add_label.html">view demo</a>
+<a href="http://htmlpreview.github.io/?https://github.com/saschas/adjust/blob/master/examples/add_label.html">view demo</a>
 #####html
 ```html
 <div class="label" data-label="box">
@@ -69,7 +69,7 @@ var box = new THREE.Mesh(boxGeometry,boxMaterial);
 ---
 
 ### .addPoints()
-Place div in Space: <a href="example/add_points.html">view demo</a>
+Place div in Space: <a href="http://htmlpreview.github.io/?https://github.com/saschas/adjust/blob/master/examples/add_points.html">view demo</a>
 
 __Data Attritbutes are required!__
 #####html
@@ -104,8 +104,8 @@ Untrack all Elements! Not labels
 
 ###.addActiveObject()
 
-<a href="example/add_active.html">view demo</a>
-<a href="example/add_active_draggable.html">view draggable demo</a>
+<a href="http://htmlpreview.github.io/?https://github.com/saschas/adjust/blob/master/examples/add_active.html">view demo</a>
+<a href="http://htmlpreview.github.io/?https://github.com/saschas/adjust/blob/master/examples/add_active_draggable.html">view draggable demo</a>
 
 | argument | type |
 |---|---|
