@@ -19,7 +19,7 @@ Init Adjust with an object that tells Adjust your active camera,scene and render
 Adjust.init({
   camera : camera,
   scene : scene,
-  renderer
+  renderer : renderer
 });
 ```
 ### .resize();
