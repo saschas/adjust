@@ -138,6 +138,7 @@ var offsetX = 0;
 var offsetY = 0;
 var offsetZ = 0;
 
+
   if(typeof domElement.dataset.offsetx != 'undefined'){
     offsetX = domElement.dataset.offsetx;
   }
@@ -263,7 +264,7 @@ onMouseMove : function( e ) {
 checkSelected : function (){
   if(this.intersected!=null){
     this.selected = this.intersected;
-    this.selectedState(this.intersected);
+    this.selectedState(this.intersected,this.intersects);
   }
   else{
     this.selected = null;
@@ -382,10 +383,11 @@ checkMouseCollision : function(){
   this.intersects = this.raycaster.intersectObjects( this.objects );
 
   if ( this.intersects.length > 0 ) {
-    
     if ( this.intersected != this.intersects[ 0 ].object ) {
+
+
       if ( this.intersected ) {
-        this.passivState(this.intersected);
+        this.passivState(this.intersected,this.intersects);
       }
 
         this.intersected = this.intersects[ 0 ].object;
@@ -395,13 +397,14 @@ checkMouseCollision : function(){
     }
 
     if ( this.intersected ) {
-      this.activState(this.intersected);
+
+      this.activState(this.intersected,this.intersects);
     }
   } else {
 
     if ( this.intersected ) {
     
-      this.passivState(this.intersected);
+      this.passivState(this.intersected,this.intersects);
     }
 
     this.intersected = null;
@@ -409,6 +412,8 @@ checkMouseCollision : function(){
 
   }
 },
+
+
 
 distanceToCamera : function(p){
 

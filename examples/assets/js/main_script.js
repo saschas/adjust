@@ -69,7 +69,7 @@ function init(){
     camera.updateProjectionMatrix();
 
     renderer.setSize( canvas_width, canvas_height );
-    effect.setSize(canvas_width, canvas_height);
+   // effect.setSize(canvas_width, canvas_height);
   }  
 
 

@@ -14,9 +14,13 @@ Load the Library.
 
 
 ### .init()
-Init Adjust with a threejs camera as argument.
+Init Adjust with an object that tells Adjust your active camera,scene and renderer.
 ```js
-Adjust.init(camera);
+Adjust.init({
+  camera : camera,
+  scene : scene,
+  renderer
+});
 ```
 ### .resize();
 Resize Adjust
@@ -127,16 +131,17 @@ var box = new THREE.Mesh(boxGeometry,boxMaterial);
 
 // States
 
+returns the selected element and as second argument the detailed raycaster output for fine control (e.g. face selection)
 //Mouseover Function
-function over (el){
+function over (element, detail){
   el.material.color = new THREE.Color(0x000000);
 }
 //Mouseout Function
-function out (el){
+function out (element, detail){
   el.material.color = new THREE.Color(0xffffff);
 }
 //Mousedown Function
-function activeState (el){
+function activeState (element, detail){
     el.material.color = new THREE.Color(0xff0000);
 }
 
