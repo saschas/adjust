@@ -131,18 +131,18 @@ var box = new THREE.Mesh(boxGeometry,boxMaterial);
 
 // States
 
-returns the selected element and as second argument the detailed raycaster output for fine control (e.g. face selection)
+//returns the selected element and as second argument the detailed raycaster output for fine control (e.g. face selection)
 //Mouseover Function
 function over (element, detail){
-  el.material.color = new THREE.Color(0x000000);
+  element.material.color = new THREE.Color(0x000000);
 }
 //Mouseout Function
 function out (element, detail){
-  el.material.color = new THREE.Color(0xffffff);
+  element.material.color = new THREE.Color(0xffffff);
 }
 //Mousedown Function
 function activeState (element, detail){
-    el.material.color = new THREE.Color(0xff0000);
+  element.material.color = new THREE.Color(0xff0000);
 }
 
 //Add Object to activeObjects

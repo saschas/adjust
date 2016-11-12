@@ -163,7 +163,7 @@ function init(){
   for ( var i = 0; i < 500; i ++ ) {
 
     mesh[i] = new THREE.Mesh( box );
-    mesh[i].material = new THREE.MeshLambertMaterial( {color: getRandomColor() } );
+    mesh[i].material = new THREE.MeshLambertMaterial( {color: 0xaaaaaa } );
     mesh[i].position.x = ( Math.random() - 0.5 ) * 200;
     mesh[i].position.y = ( Math.random() - 0.5 ) * 200;
     mesh[i].position.z = ( Math.random() - 0.5 ) * 200;

@@ -5,11 +5,15 @@
 html, body {
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 body {
   margin: 0;
-  overflow: hidden;
+}
+
+canvas {
+  position: fixed;
 }
 
 button.switch_to_vr,

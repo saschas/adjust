@@ -38,7 +38,7 @@ function init(){
   scene = new THREE.Scene();
   //__________ camera
   camera = new THREE.PerspectiveCamera( 55, canvas_width/canvas_height, 0.1, 1000 );
-  camera.position.set(0,0,200);
+  camera.position.set(200,200,200);
   scene.add(camera);
 
   //__________ renderer
@@ -55,7 +55,7 @@ function init(){
 
   document.body.appendChild( renderer.domElement );
 
-  //____ Orbit
+   //____ Orbit
 
   controls.orbit = new THREE.OrbitControls( camera );
   controls.orbit.damping = 0.2;
@@ -89,116 +89,49 @@ function init(){
     renderer : renderer
   });
 
+  //__________ Create Grid
 
+    var size = 300;
+    var step = 10;
 
+    var gridHelper = new THREE.GridHelper( size, step );
+    scene.add( gridHelper );
 
-  //Mouseover Function
-  function over (el){
+  //__________ Create Label
 
-    //console.log(el);
-    if(!('oldColor' in el)){
-      el.oldColor = el.material.color;
-      el.material.color = new THREE.Color(0x000000);
-      
-    }
-    
+  function createPoint(pos) {
+
+    var pointElement = document.createElement('div');
+        pointElement.dataset.x = pos.x;
+        pointElement.dataset.y = pos.y;
+        pointElement.dataset.z = pos.z;
+        pointElement.className = 'point';
+        pointElement.innerHTML = 'point at position x:' + Math.round(pos.x) + ',y:' + Math.round(pos.y) + ',z:' + Math.round(pos.z) ;
+
+        document.body.appendChild(pointElement);
   }
-  //Mouseout Function
-  function out (el){
-    
-    if(('oldColor' in el)){
-        el.material.color = el.oldColor;
-        delete el.oldColor;
-    }
 
-     
-    
-  }
-  //Mousedown Function
-  function activeState (el){
-    var anim = {};
 
-    el.scale.x = (el.scale.x== 1) ? (anim={
-      start :{
-        scale: 1,
-        rotate : 0
-      },end : {
-        scale : 1.5,
-        rotate : 180
-      }
-    }) : (anim = {
-      start :{
-        scale: 1.5,
-        rotate : 180
-      },end : {
-        scale : 1,
-        rotate : 0
-      }
+  for(var i=0;i<10;i++){
+    createPoint({
+      x : ( Math.random() - 0.5 ) * 200,
+      y : ( Math.random() - 0.5 ) * 200,
+      z : ( Math.random() - 0.5 ) * 200
     });
-
-
-      new TWEEN.Tween({
-        rotate: anim.start.rotate,
-        scale : anim.start.scale
-      })
-      .to({
-        rotate: anim.end.rotate,
-        scale : anim.end.scale
-      }, 1000).easing(TWEEN.Easing.Back.InOut)
-      .onUpdate(function() {
-        el.rotation.y = (this.rotate) * Math.PI / 180;
-        el.scale.set(this.scale,this.scale,this.scale);
-        el.updateMatrix();
-      }).start();
   }
 
 
-  //__________ cubes
+//track all points
+Adjust.addPoints('point');
 
-  var box = new THREE.BoxGeometry( 10,10,10 );
-
-  holder = new THREE.Object3D();
-  scene.add(holder);
-  var mesh = [];
-  for ( var i = 0; i < 500; i ++ ) {
-
-    mesh[i] = new THREE.Mesh( box );
-    mesh[i].material = new THREE.MeshLambertMaterial( {color: 0xaaaaaa } );
-    mesh[i].position.x = ( Math.random() - 0.5 ) * 200;
-    mesh[i].position.y = ( Math.random() - 0.5 ) * 200;
-    mesh[i].position.z = ( Math.random() - 0.5 ) * 200;
-
-    mesh[i].rotation.x = ( Math.random() - 0.5 ) * 2;
-    mesh[i].rotation.y = ( Math.random() - 0.5 ) * 2;
-    mesh[i].rotation.z = ( Math.random() - 0.5 ) * 2;
-
-    mesh[i].receiveShadow = true;
-    mesh[i].castShadow = true;
-    mesh[i].name = 'mesh' + i;
-    mesh[i].updateMatrix();
-    mesh[i].matrixAutoUpdate = false;
-
-
-    Adjust.addActiveObject( mesh[i] , over,out,activeState,false );
-
-    holder.add( mesh[i] );
-  }
-
-}//end of init;
-
-
+}
 //__________ render
 var render = function (time) { 
   requestAnimationFrame( render );
   controls.orbit.update();
 
-  //TWEEN update
-  TWEEN.update(time)
-
   //update Adjust
   Adjust.update();
-
-  holder.rotateY(.001);
 
   renderer.render(scene, camera);
 };

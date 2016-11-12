@@ -28,10 +28,10 @@ if ( Object.assign === undefined ) {
 Object.assign( Adjust, {
 
   dpr : window.devicePixelRatio,
-  width : window.innerWidth * this.dpr,
-  height : window.innerHeight * this.dpr,
-  realWidth : window.innerWidth,
-  realHeight : window.innerHeight,
+  width : null,
+  height : null,
+  realWidth : null,
+  realHeight : null,
   mouse : new THREE.Vector2(),
   offset : new THREE.Vector3(),
   objects : [],
@@ -50,23 +50,30 @@ init : function(opt){
   this.scene = opt.scene ? opt.scene : console.warn('scene must be present in order to initialize Adjust');
 
   this.bindEvents();
-  var renderSize = this.renderer.getSize();
-  this.width = renderSize.width * this.dpr;
-  this.height = renderSize.height * this.dpr;
-  this.realWidth = renderSize.width;
-  this.realHeight = renderSize.height;
+  this.width = this.renderer.domElement.offsetWidth * this.dpr;
+  this.height = this.renderer.domElement.offsetHeight * this.dpr;
+  this.realWidth = this.renderer.domElement.offsetWidth;
+  this.realHeight = this.renderer.domElement.offsetHeight;
   this.resize();
   this.plane = new THREE.Mesh(
     new THREE.PlaneBufferGeometry( 200, 200, 8, 8 ),
     new THREE.MeshPhongMaterial( { visible: false } )
   );
   this.scene.add( this.plane );
+
+  //set mouse coordinates to null to prevent 0,0 coordinates
+  this.mouse.x = null;
+  this.mouse.y = null;
 },
 
 bindEvents : function(){
-  window.addEventListener( 'mousemove', this.onMouseMove.bind(this), false );
-  window.addEventListener( 'mousedown', this.onMouseDown.bind(this), false );
-  window.addEventListener( 'mouseup', this.onMouseUp.bind(this), false );
+  this.renderer.domElement.addEventListener( 'mousemove', this.onMouseMove.bind(this), false );
+  this.renderer.domElement.addEventListener( 'mousedown', this.onMouseDown.bind(this), false );
+  this.renderer.domElement.addEventListener( 'mouseup', this.onMouseUp.bind(this), false );
+
+  this.renderer.domElement.addEventListener( 'touchstart', this.onTouchStart.bind(this), false );
+  this.renderer.domElement.addEventListener( 'touchend', this.onTouchEnd.bind(this), false );
+  this.renderer.domElement.addEventListener( 'touchmove', this.onTouchMove.bind(this), false );
 },
 
 randNum : function(min,max,bool){
@@ -166,11 +173,10 @@ var offsetZ = 0;
 
 resize : function (){
   this.dpr = window.devicePixelRatio;
-  var renderSize = this.renderer.getSize();
-  this.width = renderSize.width * this.dpr;
-  this.height = renderSize.height * this.dpr;
-  this.realWidth = renderSize.width;
-  this.realHeight = renderSize.height;
+  this.width = this.renderer.domElement.offsetWidth * this.dpr;
+  this.height = this.renderer.domElement.offsetHeight * this.dpr;
+  this.realWidth = this.renderer.domElement.offsetWidth;
+  this.realHeight = this.renderer.domElement.offsetHeight;
   this.half.width = 0.5  * this.width / this.dpr;
   this.half.height = 0.5  * this.height / this.dpr
 },
@@ -253,12 +259,24 @@ onMouseMove : function( e ) {
   // calculate mouse position in normalized device coordinates
   // (-1 to +1) for both components
   this.setMouse({
-    x : event.clientX,
-    y : event.clientY,
+    x : event.pageX - this.renderer.domElement.offsetLeft,
+    y : event.pageY - this.renderer.domElement.offsetTop,
     z : 0.5
   });
 
 
+},
+onTouchMove : function( e ) {
+
+  var event = e ? e:event;
+
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+  this.setMouse({
+    x : event.touches[0].pageX - this.renderer.domElement.offsetLeft,
+    y : event.touches[0].pageY - this.renderer.domElement.offsetTop,
+    z : 0.5
+  });
 },
 
 checkSelected : function (){
@@ -293,8 +311,37 @@ onMouseDown : function (e){
 onMouseUp : function (e){
   var e = e ? e:event;
   this.uncheckSelected();
-
 },
+
+
+onTouchStart : function (e){
+  var e = e ? e:event;
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+  this.setMouse({
+    x : event.touches[0].pageX - this.renderer.domElement.offsetLeft,
+    y : event.touches[0].pageY - this.renderer.domElement.offsetTop,
+    z : 0.5
+  });
+  this.checkSelected();
+},
+
+onTouchEnd : function (e){
+  var e = e ? e:event;
+  event.preventDefault();
+  //stop Propagation to unset mouse position
+  event.stopPropagation();
+  this.setMouse({
+    x : null,
+    y : null,
+    z : 0.5
+  });
+  //set mouse position out of view
+  this.uncheckSelected();
+  
+   
+},
+
 
 checkPointInRadius : function(point,target, radius,cb) {
   var distsq = (point.x - target.x) * (point.x - target.x) + (point.y - target.y) * (point.y - target.y) + (point.z - target.z) * (point.z - target.z);
@@ -353,63 +400,66 @@ addDraggable : function(obj,bool){
 
 
 checkMouseCollision : function(){
-  var vector = new THREE.Vector3();
 
-  vector.set(
-      ( this.mouse.x / this.realWidth ) * 2 - 1,
-      - ( this.mouse.y / this.realHeight ) * 2 + 1,
-      0.5 );
+  if(this.mouse.x != null || this.mouse.y != null){
+    var vector = new THREE.Vector3();
+
+    vector.set(
+        ( this.mouse.x / this.realWidth ) * 2 - 1,
+        - ( this.mouse.y / this.realHeight ) * 2 + 1,
+        0.5 );
 
 
-  this.raycaster.setFromCamera( vector, this.camera );
+    this.raycaster.setFromCamera( vector, this.camera );
 
-   if ( this.selected !=null) {
-    this.intersects = this.raycaster.intersectObject( this.plane );
+     if ( this.selected !=null) {
+      this.intersects = this.raycaster.intersectObject( this.plane );
 
-          if ( this.intersects.length > 0 ) {
-              this.plane.position.copy( this.intersected.position );
-              this.plane.lookAt( this.camera.position );
+            if ( this.intersects.length > 0 ) {
+                this.plane.position.copy( this.intersected.position );
+                this.plane.lookAt( this.camera.position );
 
-            
-            if(this.intersected._draggable){
-
-              this.selected.position.copy( this.intersects[ 0 ].point.sub( this.offset ) );
               
+              if(this.intersected._draggable){
+
+                this.selected.position.copy( this.intersects[ 0 ].point.sub( this.offset ) );
+                
+              }
             }
-          }
-    return;
-  }
+      return;
+    }
 
-  this.intersects = this.raycaster.intersectObjects( this.objects );
+    this.intersects = this.raycaster.intersectObjects( this.objects );
 
-  if ( this.intersects.length > 0 ) {
-    if ( this.intersected != this.intersects[ 0 ].object ) {
+    if ( this.intersects.length > 0 ) {
+      if ( this.intersected != this.intersects[ 0 ].object ) {
 
+
+        if ( this.intersected ) {
+          this.passivState(this.intersected,this.intersects);
+        }
+
+          this.intersected = this.intersects[ 0 ].object;
+         
+          this.plane.position.copy( this.intersected.position );
+          this.plane.lookAt( this.camera.position );
+      }
 
       if ( this.intersected ) {
+
+        this.activState(this.intersected,this.intersects);
+      }
+    } else {
+
+      if ( this.intersected ) {
+      
         this.passivState(this.intersected,this.intersects);
       }
 
-        this.intersected = this.intersects[ 0 ].object;
-       
-        this.plane.position.copy( this.intersected.position );
-        this.plane.lookAt( this.camera.position );
+      this.intersected = null;
+      this.selected = null;
+
     }
-
-    if ( this.intersected ) {
-
-      this.activState(this.intersected,this.intersects);
-    }
-  } else {
-
-    if ( this.intersected ) {
-    
-      this.passivState(this.intersected,this.intersects);
-    }
-
-    this.intersected = null;
-    this.selected = null;
-
   }
 },
 
